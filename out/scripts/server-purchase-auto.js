@@ -1,19 +1,19 @@
-import { nslib } from 'lib.js';
+import { nslib } from './tools.js';
 
-/** 
+/**
  * A simple script to automatically purchase servers and run hack scripts.
  * @author excd
  * @remarks RAM cost: 6.35GB
- * @param {NS} ns - Netscript environment.
-**/
+ * @param {import('@ns').NS} ns - Netscript environment.
+ */
 export async function main(ns) {
   // Help message.
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
-      'Automatically purchases servers with the specified amount of RAM (in gigabytes) and'
-      + ' executes a hack script with the specified thread count and target hostname.'
-      + `\nScript Usage: > run ${ns.getScriptName()} {ram} {threads} {hostname}`
-      + `\n     Example: > run ${ns.getScriptName()} 8 3 n00dles`
+      'Automatically purchases servers with the specified amount of RAM (in gigabytes) and' +
+        ' executes a hack script with the specified thread count and target hostname.' +
+        `\nScript Usage: > run ${ns.getScriptName()} {ram} {threads} {hostname}` +
+        `\n     Example: > run ${ns.getScriptName()} 8 3 n00dles`
     );
     return;
   }
@@ -26,10 +26,10 @@ export async function main(ns) {
   // Constants.
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
-  const script = 'hack-simple.js';
+  const script = 'scripts/hack-simple.js';
 
   // Attempt to purchase servers until limit reached.
-  for (let i = nslib._getPurchasedServers(ns).length; i < limit;) {
+  for (let i = nslib._getPurchasedServers(ns).length; i < limit; ) {
     // Purchase server if possible, otherwise wait.
     if (ns.getServerMoneyAvailable('home') > price) {
       try {
@@ -39,20 +39,19 @@ export async function main(ns) {
 
         // Copy and execute hack script.
         await ns.scp(script, hostname);
-        const pid = ns.exec(script, hostname, threads, target)
-        ns.tprint(pid
-          ? `${script} executed on ${hostname} (pid ${pid}), targeting ${target} with ${threads} thread(s).`
-          : `ERROR! ${script} failed to execute on ${hostname}.`
+        const pid = ns.exec(script, hostname, threads, target);
+        ns.tprint(
+          pid
+            ? `${script} executed on ${hostname} (pid ${pid}), targeting ${target} with ${threads} thread(s).`
+            : `ERROR! ${script} failed to execute on ${hostname}.`
         );
-      }
-      catch (e) {
+      } catch (e) {
         ns.tprint(`ERROR! Purchase script terminated prematurely.\n${e}`);
         return;
       }
 
       i++; //	Increment on successful purchase.
-    }
-    else {
+    } else {
       await ns.sleep(3000);
     }
   }
