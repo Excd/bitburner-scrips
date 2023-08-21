@@ -1,5 +1,5 @@
 /**
- * Main method. Allows terminal usage of some library functions via arguments.
+ * Main method. Allows terminal usage of library functions via arguments.
  * @author excd
  * @remarks RAM cost: 1.8GB
  * @param {import('@ns').NS} ns - Netscript environment.
@@ -14,7 +14,7 @@ export function main(ns) {
   // Help message.
   if (flags.help) {
     ns.tprint(
-      'Allows terminal usage of some library functions via arguments. Netscript alternative' +
+      'Allows terminal usage of library functions via arguments. Alternative Netscript' +
         ' functions require the ns flag (--ns).' +
         `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
         `\n     Example: > run ${ns.getScriptName()} getServers server-term home` +
@@ -29,10 +29,11 @@ export function main(ns) {
 
   let result; // Command result.
 
-  // Run command.
+  // Attempt to run command and get result.
   try {
-    if (flags.ns) result = nslib[`_${command}`](ns, ...args);
-    else result = lib[command](ns, ...args);
+    result = flags.ns
+      ? nslib[`_${command}`](ns, ...args)
+      : lib[command](ns, ...args);
   } catch (e) {
     ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
     return;
@@ -42,7 +43,9 @@ export function main(ns) {
   ns.tprint(Array.isArray(result) ? `\n${result.join('\n')}` : result);
 }
 
-// Helper functions.
+/**
+ * Helper functions namespace.
+ */
 export const lib = {
   /**
    * Returns an array of servers.
@@ -58,7 +61,9 @@ export const lib = {
   },
 };
 
-// Alternative Netscript functions.
+/**
+ * Alternative Netscript functions namespace.
+ */
 export const nslib = {
   /**
    * Returns an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
