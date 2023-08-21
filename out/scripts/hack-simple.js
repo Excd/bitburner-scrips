@@ -1,6 +1,7 @@
 /**
  * A basic hacking script.
  * @author excd
+ * @remarks RAM cost: 2.8GB
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
