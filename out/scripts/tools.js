@@ -1,63 +1,74 @@
 /**
- * Main method. Allows direct terminal usage of some library functions.
+ * Main method. Allows terminal usage of some library functions via arguments.
  * @author excd
  * @remarks RAM cost: 1.8GB
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export function main(ns) {
+  // Get flags.
+  const flags = ns.flags([
+    ['help', false],
+    ['ns', false],
+  ]);
+
   // Help message.
-  if (ns.flags([['help', false]]).help) {
+  if (flags.help) {
     ns.tprint(
-      '' +
-        `\nScript Usage: > run ${ns.getScriptName()} {command} <arg1 arg2...>` +
-        `\n     Example: > run ${ns.getScriptName()} getServers server-term`
+      'Allows terminal usage of some library functions via arguments. Netscript alternative' +
+        ' functions require the ns flag (--ns).' +
+        `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
+        `\n     Example: > run ${ns.getScriptName()} getServers server-term home` +
+        `\n     Example: > run ${ns.getScriptName()} --ns getPurchasedServers`
     );
     return;
   }
 
   // Arguments.
-  const command = ns.args[0];
-  const args = ns.args.slice(1);
+  const command = ns.args[flags.ns ? 1 : 0];
+  const args = ns.args.slice(flags.ns ? 2 : 1);
 
-  // Execute command.
-  switch (command) {
-    case 'getServers':
-      ns.tprint(lib.getServers(ns.scan('home'), ...args).join('\n'));
-      break;
-    case 'getPurchasedServers':
-      ns.tprint(nslib._getPurchasedServers(ns).join('\n'));
-      break;
-    default:
-      ns.tprint(`ERROR! Invalid command: ${command}`);
-      break;
+  let result; // Command result.
+
+  // Run command.
+  try {
+    if (flags.ns) result = nslib[`_${command}`](ns, ...args);
+    else result = lib[command](ns, ...args);
+  } catch (e) {
+    ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
+    return;
   }
+
+  // Print result.
+  ns.tprint(Array.isArray(result) ? `\n${result.join('\n')}` : result);
 }
 
-// Standard library functions.
+// Helper functions.
 export const lib = {
   /**
    * Returns an array of servers.
    * @author excd
-   * @remarks RAM cost: 0GB
-   * @param {string[]} serverList - List of scanned servers to select from.
-   * @param {string} term - Optional search term for server names.
+   * @remarks RAM cost: 0.2GB
+   * @param {import('@ns').NS} ns - Netscript environment.
+   * @param {string} [term] - Search term for server names.
+   * @param {string} [hostname=home] - Hostname of server to scan.
    * @returns {string[]} Array of servers.
    */
-  getServers: function (serverList, term = '') {
-    return serverList.filter((server) => server.includes(term));
+  getServers: function (ns, term = '', hostname = 'home') {
+    return ns.scan(hostname).filter((server) => server.includes(term));
   },
 };
 
-// Alternative netscript functions.
+// Alternative Netscript functions.
 export const nslib = {
   /**
    * Returns an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
    * @author excd
-   * @remarks RAM cost: 0.2GB
+   * @remarks RAM cost: 0GB
    * @param {import('@ns').NS} ns - Netscript environment.
+   * @param {string} [term=pserv] - Search term for server names.
    * @returns {string[]} Array of purchased servers.
    */
-  _getPurchasedServers: function (ns) {
-    return lib.getServers(ns.scan('home'), 'pserv');
+  _getPurchasedServers: function (ns, term = 'pserv') {
+    return lib.getServers(ns, term);
   },
 };
