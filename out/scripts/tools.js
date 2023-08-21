@@ -9,10 +9,27 @@ export function main(ns) {
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
       '' +
-        `\nScript Usage: > run ${ns.getScriptName()} --{command} <arg1 arg2...>` +
-        `\n     Example: > run ${ns.getScriptName()} --getServers my-server-term`
+        `\nScript Usage: > run ${ns.getScriptName()} {command} <arg1 arg2...>` +
+        `\n     Example: > run ${ns.getScriptName()} getServers server-term`
     );
     return;
+  }
+
+  // Arguments.
+  const command = ns.args[0];
+  const args = ns.args.slice(1);
+
+  // Execute command.
+  switch (command) {
+    case 'getServers':
+      ns.tprint(lib.getServers(ns.scan('home'), ...args).join('\n'));
+      break;
+    case 'getPurchasedServers':
+      ns.tprint(nslib._getPurchasedServers(ns).join('\n'));
+      break;
+    default:
+      ns.tprint(`ERROR! Invalid command: ${command}`);
+      break;
   }
 }
 
