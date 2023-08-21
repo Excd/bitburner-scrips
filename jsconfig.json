@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "es6",
+    "paths": {
+      "@ns": ["./bitburner-src/src/ScriptEditor/NetscriptDefinitions"]
+    }
+  },
+  "include": ["NetscriptDefinitions", "./out/scripts/*.js"]
+}
