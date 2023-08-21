@@ -1,10 +1,10 @@
 # Bitburner Scripts
 
-A collection of scripts created for the game [Bitburner](https://github.com/bitburner-official/bitburner-src).
+A collection of scripts created for the game [Bitburner](https://bitburner-official.github.io/).
 
 This repository is setup to be usable with Visual Studio Code and the [Bitburner Extension](https://marketplace.visualstudio.com/items?itemName=bitburner.bitburner-vscode-integration).
 
-Code auto-completion and documentation are available via importing `NetscriptDefinitions.d.ts` from the Bitburner source code included as a submodule.
+Code auto-completion and documentation are available via importing `NetscriptDefinitions.d.ts` from the [Bitburner source code](https://github.com/bitburner-official/bitburner-src) included as a submodule.
 
 The following JSDoc is used for VSCode to recognize netscript definitions:
 
