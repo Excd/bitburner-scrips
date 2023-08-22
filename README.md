@@ -1,6 +1,6 @@
 # Bitburner Scripts
 
-A collection of scripts created for the game [Bitburner](https://bitburner-official.github.io/).
+A collection of my scripts for the incremental programming RPG [Bitburner](https://bitburner-official.github.io/).
 
 This repository is setup to be usable with Visual Studio Code and the [Bitburner Extension](https://marketplace.visualstudio.com/items?itemName=bitburner.bitburner-vscode-integration).
 
