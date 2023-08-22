@@ -1,4 +1,4 @@
-import { nslib } from './tools.js';
+import { lib, nslib } from 'tools';
 
 /**
  * A simple script to automatically purchase servers and run hack scripts.
