@@ -26,7 +26,7 @@ export async function main(ns) {
   // Constants.
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
-  const script = 'scripts/hack-simple.js';
+  const script = 'scripts/hack.js';
 
   // Attempt to purchase servers until limit reached.
   for (let i = nslib._getPurchasedServers(ns).length; i < limit; ) {
