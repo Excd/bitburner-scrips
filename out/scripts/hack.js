@@ -20,18 +20,21 @@ export async function main(ns) {
   const target = ns.args[0];
 
   // Constants.
+  const programs = [
+    { name: 'BruteSSH', function: ns.brutessh },
+    { name: 'FTPCrack', function: ns.ftpcrack },
+    { name: 'relaySMTP', function: ns.relaysmtp },
+    { name: 'HTTPWorm', function: ns.httpworm },
+    { name: 'SQLInject', function: ns.sqlinject },
+    { name: 'NUKE', function: ns.nuke },
+  ];
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
   const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
-  // Open ports if possible.
-  if (ns.fileExists('BruteSSH.exe', 'home')) ns.brutessh(target);
-  if (ns.fileExists('FTPCrack.exe', 'home')) ns.ftpcrack(target);
-  if (ns.fileExists('relaySMTP.exe', 'home')) ns.relaysmtp(target);
-  if (ns.fileExists('HTTPWorm.exe', 'home')) ns.httpworm(target);
-  if (ns.fileExists('SQLInject.exe', 'home')) ns.sqlinject(target);
-
-  // Gain root access.
-  if (ns.fileExists('NUKE.exe', 'home')) ns.nuke(target);
+  // Execute available port programs gain root access.
+  programs.forEach((program) => {
+    if (ns.fileExists(`${program.name}.exe`, 'home')) program.function(target);
+  });
 
   // Hack loop.
   while (true) {
