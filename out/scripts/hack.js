@@ -37,10 +37,8 @@ export async function main(ns) {
 
   // Hack loop.
   while (true) {
-    if (ns.getServerSecurityLevel(target) > securityThreshold)
-      await ns.weaken(target);
-    else if (ns.getServerMoneyAvailable(target) < moneyThreshold)
-      await ns.grow(target);
+    if (ns.getServerSecurityLevel(target) > securityThreshold) await ns.weaken(target);
+    else if (ns.getServerMoneyAvailable(target) < moneyThreshold) await ns.grow(target);
     else await ns.hack(target);
   }
 }

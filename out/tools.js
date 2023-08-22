@@ -76,6 +76,5 @@ export const nslib = {
    * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
    * @returns {string[]} Array of purchased servers.
    */
-  getpurchasedservers: (ns, term = 'pserv') =>
-    nslib.getservers(ns, 'home', term),
+  getpurchasedservers: (ns, term = 'pserv') => nslib.getservers(ns, 'home', term),
 };
