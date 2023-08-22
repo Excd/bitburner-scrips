@@ -18,4 +18,4 @@ This is required for each function using the netscript environment.
 
 `@ns` is a path defined in `jsconfig.json`.
 
-Scripts are located in `out/scripts`.
+In-game files are located in `out/`.
