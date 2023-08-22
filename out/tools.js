@@ -51,9 +51,7 @@ export const lib = {
    * @param {number} required - Script RAM requirement.
    * @returns {number} Maximum usable threads.
    */
-  maxthreads: function (available, required) {
-    return Math.floor(available / required);
-  },
+  maxthreads: (available, required) => Math.floor(available / required),
 };
 
 /**
@@ -68,9 +66,8 @@ export const nslib = {
    * @param {string} [term] - Optional. Search term for server names.
    * @returns {string[]} Array of servers.
    */
-  getservers: function (ns, hostname = 'home', term = '') {
-    return ns.scan(hostname).filter((server) => server.includes(term));
-  },
+  getservers: (ns, hostname = 'home', term = '') =>
+    ns.scan(hostname).filter((server) => server.includes(term)),
 
   /**
    * Returns an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
@@ -79,7 +76,6 @@ export const nslib = {
    * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
    * @returns {string[]} Array of purchased servers.
    */
-  getpurchasedservers: function (ns, term = 'pserv') {
-    return nslib.getservers(ns, 'home', term);
-  },
+  getpurchasedservers: (ns, term = 'pserv') =>
+    nslib.getservers(ns, 'home', term),
 };
