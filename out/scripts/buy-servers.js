@@ -64,7 +64,7 @@ export async function main(ns) {
           );
         }
       } catch (e) {
-        ns.tprint(`ERROR! Purchase script terminated prematurely.\n${e}`);
+        ns.tprint(`ERROR! Script terminated prematurely.\n${e}`);
         return;
       }
 
@@ -74,5 +74,5 @@ export async function main(ns) {
     }
   }
 
-  ns.tprint(`Server limit reached (${limit}). Purchase script terminated.`);
+  ns.tprint(`Server limit reached (${limit}). Script terminated.`);
 }
