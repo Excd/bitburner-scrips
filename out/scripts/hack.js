@@ -9,7 +9,7 @@ export async function main(ns) {
     ns.tprint(
       'A simple hacking script which will weaken or grow the target server automatically at' +
         ' predefined thresholds.' +
-        `\nScript Usage: > run ${ns.getScriptName()} {hostname} -t {threads}` +
+        `\nScript Usage: > run ${ns.getScriptName()} {hostname} <-t threads>` +
         `\n     Example: > run ${ns.getScriptName()} n00dles -t 3`
     );
     return;
