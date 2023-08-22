@@ -6,5 +6,5 @@
       "@ns": ["./bitburner-src/src/ScriptEditor/NetscriptDefinitions"]
     }
   },
-  "include": ["NetscriptDefinitions", "./out/scripts/*.js"]
+  "include": ["NetscriptDefinitions", "./out/**/*.js"]
 }
