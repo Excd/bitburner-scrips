@@ -13,11 +13,10 @@ export function main(ns) {
   // Help message.
   if (flags.help) {
     ns.tprint(
-      'Allows terminal usage of library functions via arguments (case sensitive). Alternative' +
-        ' Netscript functions require the ns flag (--ns).' +
+      'Allows terminal usage of library functions via arguments (case sensitive). Netscript' +
+        ' environment functions require the ns flag (--ns).' +
         `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
-        `\n     Example: > run ${ns.getScriptName()} getServers server-term home` +
-        `\n     Example: > run ${ns.getScriptName()} --ns getPurchasedServers`
+        `\n     Example: > run ${ns.getScriptName()} --ns getServers term home`
     );
     return;
   }
@@ -32,7 +31,7 @@ export function main(ns) {
   try {
     result = flags.ns
       ? nslib[`_${command}`](ns, ...args)
-      : lib[command](ns, ...args);
+      : lib[command](...args);
   } catch (e) {
     ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
     return;
@@ -43,7 +42,7 @@ export function main(ns) {
 }
 
 /**
- * Helper functions namespace.
+ * Standard helper function namespace.
  */
 export const lib = {
   /**
@@ -53,36 +52,36 @@ export const lib = {
    * @param {number} available - Available server RAM.
    * @param {number} required - Script RAM requirement.
    * @returns {number} Maximum usable threads.
-   **/
-  getMaxThreads: function (available, required) {
-    return Math.floor(available / required);
-  },
-
-  /**
-   * Returns an array of servers.
-   * @remarks RAM cost: 0.2GB
-   * @param {import('@ns').NS} ns - Netscript environment.
-   * @param {string} [term] - Optional. Search term for server names.
-   * @param {string} [hostname=home] - Optional. Hostname of server to scan.
-   * @returns {string[]} Array of servers.
    */
-  getServers: function (ns, term = '', hostname = 'home') {
-    return ns.scan(hostname).filter((server) => server.includes(term));
+  maxThreads: function (available, required) {
+    return Math.floor(available / required);
   },
 };
 
 /**
- * Alternative Netscript functions namespace.
+ * Netscript environment function namespace.
  */
 export const nslib = {
+  /**
+   * Returns an array of servers.
+   * @remarks RAM cost: 0.2GB
+   * @param {import('@ns').NS} ns - Netscript environment.
+   * @param {string} [hostname=home] - Optional. Hostname of server to scan. (Default: home)
+   * @param {string} [term] - Optional. Search term for server names.
+   * @returns {string[]} Array of servers.
+   */
+  _getServers: function (ns, hostname = 'home', term = '') {
+    return ns.scan(hostname).filter((server) => server.includes(term));
+  },
+
   /**
    * Returns an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
    * @remarks RAM cost: 0GB
    * @param {import('@ns').NS} ns - Netscript environment.
-   * @param {string} [term=pserv] - Optional. Search term for server names.
+   * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
    * @returns {string[]} Array of purchased servers.
    */
   _getPurchasedServers: function (ns, term = 'pserv') {
-    return lib.getServers(ns, term);
+    return nslib._getServers(ns, 'home', term);
   },
 };
