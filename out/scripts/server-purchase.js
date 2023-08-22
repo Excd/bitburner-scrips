@@ -34,13 +34,13 @@ export async function main(ns) {
   const script = 'scripts/hack.js';
 
   // Attempt to purchase servers until limit reached.
-  for (let i = nslib._getPurchasedServers(ns).length; i < limit; ) {
-    // Wait if funds are insufficient.
-    if (ns.getServerMoneyAvailable('home') > price) {
+  for (let i = nslib.getpurchasedservers(ns).length; i < limit; ) {
+    // Check if sufficient funds are available.
+    if (ns.getServerMoneyAvailable('home') >= price) {
       // Determine target server if not specified.
       if (flags.hack && target == null) {
         let targetMoney = 0;
-        nslib._getServers(ns).forEach((server) => {
+        nslib.getservers(ns).forEach((server) => {
           if (ns.getServerMoneyAvailable(server) > targetMoney)
             targetMoney = ns.getServerMoneyAvailable((target = server));
         });
@@ -54,7 +54,7 @@ export async function main(ns) {
         // Copy and execute hack script.
         if (flags.hack) {
           await ns.scp(script, hostname);
-          const threads = lib.maxThreads(ram, ns.getScriptRam(script));
+          const threads = lib.maxthreads(ram, ns.getScriptRam(script));
           const pid = ns.exec(script, hostname, threads, target);
           ns.tprint(
             pid
@@ -70,7 +70,7 @@ export async function main(ns) {
 
       i++; //	Increment on successful purchase.
     } else {
-      await ns.sleep(3000);
+      await ns.sleep(3000); // Wait if funds not sufficient.
     }
   }
 

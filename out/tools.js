@@ -16,22 +16,20 @@ export function main(ns) {
       'Allows terminal usage of library functions via arguments (case sensitive). Netscript' +
         ' environment functions require the ns flag (--ns).' +
         `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
-        `\n     Example: > run ${ns.getScriptName()} --ns getServers term home`
+        `\n     Example: > run ${ns.getScriptName()} --ns getservers term home`
     );
     return;
   }
 
   // Arguments.
-  const command = ns.args[flags.ns ? 1 : 0];
+  const command = ns.args[flags.ns ? 1 : 0].toLowerCase();
   const args = ns.args.slice(flags.ns ? 2 : 1);
 
   let result; // Command result.
 
   // Attempt to run command and get result.
   try {
-    result = flags.ns
-      ? nslib[`_${command}`](ns, ...args)
-      : lib[command](...args);
+    result = !flags.ns ? lib[command](...args) : nslib[command](ns, ...args);
   } catch (e) {
     ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
     return;
@@ -53,7 +51,7 @@ export const lib = {
    * @param {number} required - Script RAM requirement.
    * @returns {number} Maximum usable threads.
    */
-  maxThreads: function (available, required) {
+  maxthreads: function (available, required) {
     return Math.floor(available / required);
   },
 };
@@ -70,7 +68,7 @@ export const nslib = {
    * @param {string} [term] - Optional. Search term for server names.
    * @returns {string[]} Array of servers.
    */
-  _getServers: function (ns, hostname = 'home', term = '') {
+  getservers: function (ns, hostname = 'home', term = '') {
     return ns.scan(hostname).filter((server) => server.includes(term));
   },
 
@@ -81,7 +79,7 @@ export const nslib = {
    * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
    * @returns {string[]} Array of purchased servers.
    */
-  _getPurchasedServers: function (ns, term = 'pserv') {
-    return nslib._getServers(ns, 'home', term);
+  getpurchasedservers: function (ns, term = 'pserv') {
+    return nslib.getservers(ns, 'home', term);
   },
 };
