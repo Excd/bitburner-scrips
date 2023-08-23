@@ -1,16 +1,20 @@
 import { open_ports, get_target } from 'tools';
 
 /**
- * A basic hack script.
- * @remarks RAM cost: 3 GB
+ * Basic hack script.
+ * @remarks
+ * RAM cost: 3 GB
+ *
+ * Automatically determines target hostname if not specified.
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
   // Help message.
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
-      'INFO: Simple hack script that weakens or grows the target server automatically at' +
-        ' predetermined thresholds. Hostname determined automatically if not specified.' +
+      'INFO: Weakens or grows the target server automatically at predetermined thresholds.' +
+        ' Hostname determined automatically if not specified.' +
         `\nScript Usage: > run ${ns.getScriptName()} {hostname} <-t threads>` +
         `\n     Example: > run ${ns.getScriptName()} n00dles -t 3`
     );

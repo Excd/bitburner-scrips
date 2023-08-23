@@ -1,6 +1,10 @@
 /**
- * Main method. Allows terminal usage of library functions via arguments.
- * @remarks RAM cost: 2.25 GB
+ * Interpret arguments as library function calls.
+ * @remarks
+ * RAM cost: 2.25 GB
+ *
+ * Netscript environment functions require the --ns flag.
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export function main(ns) {
@@ -13,8 +17,8 @@ export function main(ns) {
   // Help message.
   if (flags.help) {
     ns.tprint(
-      'INFO: Allows terminal usage of library functions via arguments (case sensitive). Netscript' +
-        ' environment functions require the --ns flag.' +
+      'INFO: Allows terminal usage of library functions via arguments. Netscript environment' +
+        ' functions require the --ns flag.' +
         `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
         `\n     Example: > run ${ns.getScriptName()} --ns get_servers term home`
     );
@@ -39,8 +43,12 @@ export function main(ns) {
 }
 
 /**
- * Opens all available ports on the target server.
- * @remarks RAM cost: 0.35 GB
+ * Open all available ports on the target server.
+ * @remarks
+ * RAM cost: 0.35 GB
+ *
+ * Port programs must exist in the home directory.
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} target - Target server hostname.
  */
@@ -59,8 +67,10 @@ export function open_ports(ns, target) {
 }
 
 /**
- * Returns an array of servers.
- * @remarks RAM cost: 0.2 GB
+ * Return an array of servers.
+ * @remarks
+ * RAM cost: 0.2 GB
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} [hostname=home] - Optional. Hostname of server to scan. (Default: home)
  * @param {string} [term] - Optional. Search term for server names.
@@ -71,8 +81,10 @@ export function get_servers(ns, hostname = 'home', term = '') {
 }
 
 /**
- * Returns an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
- * @remarks RAM cost: 0.2 GB
+ * Return an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
+ * @remarks
+ * RAM cost: 0.2 GB
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
  * @returns {string[]} Array of purchased servers.
@@ -82,8 +94,10 @@ export function get_purchased_servers(ns, term = 'pserv') {
 }
 
 /**
- * Returns the server with the most money available.
- * @remarks RAM cost: 0.3 GB
+ * Return the server with the most money available.
+ * @remarks
+ * RAM cost: 0.3 GB
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @returns {string} Server hostname with the most money available.
  */
@@ -103,9 +117,11 @@ export function get_target(ns) {
  */
 export const lib = {
   /**
-   * Returns the maximum threads usable by a script given available server RAM and
+   * Return the maximum threads usable by a script given available server RAM and
    * script requirement.
-   * @remarks RAM cost: 0 GB
+   * @remarks
+   * RAM cost: 0 GB
+   *
    * @param {number} available - Available server RAM.
    * @param {number} required - Script RAM requirement.
    * @returns {number} Maximum usable threads.

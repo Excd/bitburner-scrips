@@ -1,8 +1,13 @@
 import { lib, get_purchased_servers } from 'tools';
 
 /**
- * A script to automatically purchase servers and run hack scripts.
- * @remarks RAM cost: 6.55 GB
+ * Automatically purchase servers and optionally run hack scripts.
+ * @remarks
+ * RAM cost: 6.55 GB
+ *
+ * Optionally executes a hack script with maximum possible threads. Target hostname
+ * determined automatically if not specified.
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
