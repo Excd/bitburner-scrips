@@ -1,8 +1,8 @@
-import { lib, nslib } from 'tools';
+import { lib, get_purchased_servers } from 'tools';
 
 /**
- * A simple script to automatically purchase servers and run hack scripts.
- * @remarks RAM cost: 6.55GB
+ * A script to automatically purchase servers and run hack scripts.
+ * @remarks RAM cost: 6.55 GB
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
@@ -15,9 +15,9 @@ export async function main(ns) {
   // Help message.
   if (flags.help) {
     ns.tprint(
-      'Automatically purchases servers with the specified amount of RAM (in gigabytes) and' +
-        ' optionally executes a hack script with the specified target hostname and max' +
-        ' possible threads. Hostname will be determined automatically if not specified.' +
+      'Purchases servers automatically with the specified amount of RAM (in gigabytes).' +
+        ' Optionally executes a hack script with maximum possible threads. Target hostname' +
+        ' determined automatically if not specified.' +
         `\nScript Usage: > run ${ns.getScriptName()} <--hack> {ram} <hostname>` +
         `\n     Example: > run ${ns.getScriptName()} --hack 8 n00dles`
     );
@@ -27,39 +27,28 @@ export async function main(ns) {
   // Arguments.
   const ram = ns.args[flags.hack ? 1 : 0];
   let target = ns.args[2];
-
   // Constants.
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
   const script = 'scripts/hack.js';
 
   // Attempt to purchase servers until limit reached.
-  for (let i = nslib.getpurchasedservers(ns).length; i < limit; ) {
+  for (let i = get_purchased_servers(ns).length; i < limit; ) {
     // Check if sufficient funds are available.
     if (ns.getServerMoneyAvailable('home') >= price) {
-      // Determine target server if not specified.
-      if (flags.hack && target == null) {
-        let targetMoney = 0;
-        nslib.getservers(ns).forEach((server) => {
-          if (ns.getServerMoneyAvailable(server) > targetMoney)
-            targetMoney = ns.getServerMoneyAvailable((target = server));
-        });
-      }
-
-      // Purchase server and create hostname.
       try {
+        // Purchase server and create hostname.
         const hostname = ns.purchaseServer(`pserv-${i}-${ram}GB`, ram);
         ns.tprint(`${hostname} purchased for \$${price}.`);
 
-        // Copy and execute hack script.
+        // Copy and execute hack script if specified.
         if (flags.hack) {
-          await ns.scp(script, hostname);
-          const threads = lib.maxthreads(ram, ns.getScriptRam(script));
+          ns.scp(script, hostname);
+          const threads = lib.max_threads(ram, ns.getScriptRam(script));
           const pid = ns.exec(script, hostname, threads, target);
           ns.tprint(
             pid
-              ? `${script} executed on ${hostname} (pid ${pid}),` +
-                  ` targeting ${target} with ${threads} thread(s).`
+              ? `${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
               : `ERROR! ${script} failed to execute on ${hostname}.`
           );
         }
@@ -70,7 +59,7 @@ export async function main(ns) {
 
       i++; //	Increment on successful purchase.
     } else {
-      await ns.sleep(3000); // Wait if funds not sufficient.
+      await ns.sleep(3000);
     }
   }
 

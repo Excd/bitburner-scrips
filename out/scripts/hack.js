@@ -1,14 +1,16 @@
+import { open_ports, get_target } from 'tools';
+
 /**
- * A basic hacking script.
- * @remarks RAM cost: 2.8GB
+ * A basic hack script.
+ * @remarks RAM cost: 3 GB
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
   // Help message.
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
-      'A simple hacking script which will weaken or grow the target server automatically at' +
-        ' predefined thresholds.' +
+      'Simple hack script that weakens or grows the target server automatically at' +
+        ' predetermined thresholds. Hostname determined automatically if not specified.' +
         `\nScript Usage: > run ${ns.getScriptName()} {hostname} <-t threads>` +
         `\n     Example: > run ${ns.getScriptName()} n00dles -t 3`
     );
@@ -16,24 +18,16 @@ export async function main(ns) {
   }
 
   // Arguments.
-  const target = ns.args[0];
-
+  const target = ns.args[0] == null ? get_target(ns) : ns.args[0];
   // Constants.
-  const programs = [
-    { name: 'BruteSSH', function: ns.brutessh },
-    { name: 'FTPCrack', function: ns.ftpcrack },
-    { name: 'relaySMTP', function: ns.relaysmtp },
-    { name: 'HTTPWorm', function: ns.httpworm },
-    { name: 'SQLInject', function: ns.sqlinject },
-    { name: 'NUKE', function: ns.nuke },
-  ];
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
   const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
+  ns.tprint(`Targeting ${target}.`);
+
   // Execute available port programs gain root access.
-  programs.forEach((program) => {
-    if (ns.fileExists(`${program.name}.exe`, 'home')) program.function(target);
-  });
+  open_ports(ns, target);
+  ns.nuke(target);
 
   // Hack loop.
   while (true) {
