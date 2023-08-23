@@ -9,7 +9,7 @@ export async function main(ns) {
   // Help message.
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
-      'Simple hack script that weakens or grows the target server automatically at' +
+      'INFO: Simple hack script that weakens or grows the target server automatically at' +
         ' predetermined thresholds. Hostname determined automatically if not specified.' +
         `\nScript Usage: > run ${ns.getScriptName()} {hostname} <-t threads>` +
         `\n     Example: > run ${ns.getScriptName()} n00dles -t 3`
@@ -23,9 +23,9 @@ export async function main(ns) {
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
   const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
-  ns.tprint(`Targeting ${target}.`);
+  ns.tprint(`INFO: Targeting ${target}.`);
 
-  // Execute available port programs gain root access.
+  // Attempt to open ports and gain root access.
   open_ports(ns, target);
   ns.nuke(target);
 

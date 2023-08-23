@@ -13,8 +13,8 @@ export function main(ns) {
   // Help message.
   if (flags.help) {
     ns.tprint(
-      'Allows terminal usage of library functions via arguments (case sensitive). Netscript' +
-        ' environment functions require the ns flag (--ns).' +
+      'INFO: Allows terminal usage of library functions via arguments (case sensitive). Netscript' +
+        ' environment functions require the --ns flag.' +
         `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
         `\n     Example: > run ${ns.getScriptName()} --ns get_servers term home`
     );
@@ -35,7 +35,7 @@ export function main(ns) {
   }
 
   // Print formatted result.
-  ns.tprint(Array.isArray(result) ? `\n${result.join('\n')}` : result);
+  ns.tprint('INFO: ' + Array.isArray(result) ? `\n${result.join('\n')}` : result);
 }
 
 /**
