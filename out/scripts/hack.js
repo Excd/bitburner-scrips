@@ -15,8 +15,8 @@ export async function main(ns) {
     ns.tprint(
       'INFO: Weakens or grows the target server automatically at predetermined thresholds.' +
         ' Hostname determined automatically if not specified.' +
-        `\nScript Usage: > run ${ns.getScriptName()} {hostname} <-t threads>` +
-        `\n     Example: > run ${ns.getScriptName()} n00dles -t 3`
+        `\n[Usage   /]> run ${ns.getScriptName()} {hostname} <-t threads>` +
+        `\n[Example /]> run ${ns.getScriptName()} n00dles -t 3`
     );
     return;
   }

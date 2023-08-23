@@ -19,8 +19,8 @@ export function main(ns) {
     ns.tprint(
       'INFO: Allows terminal usage of library functions via arguments. Netscript environment' +
         ' functions require the --ns flag.' +
-        `\nScript Usage: > run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
-        `\n     Example: > run ${ns.getScriptName()} --ns get_servers term home`
+        `\n[Usage   /]> run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
+        `\n[Example /]> run ${ns.getScriptName()} --ns get_servers term home`
     );
     return;
   }
@@ -41,6 +41,25 @@ export function main(ns) {
   // Print formatted result.
   ns.tprint('INFO: ' + Array.isArray(result) ? `\n${result.join('\n')}` : result);
 }
+
+/**
+ * Helper library.
+ * @remarks
+ * Functions do not require the Netscript environment. All functions cost zero RAM.
+ */
+export const lib = {
+  /**
+   * Return the maximum threads usable by a script given available server RAM and
+   * script requirement.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @param {number} available - Available server RAM.
+   * @param {number} required - Script RAM requirement.
+   * @returns {number} Maximum usable threads.
+   */
+  max_threads: (available, required) => Math.floor(available / required),
+};
 
 /**
  * Open all available ports on the target server.
@@ -111,20 +130,3 @@ export function get_target(ns) {
 
   return target.hostname;
 }
-
-/**
- * Standard helper function namespace.
- */
-export const lib = {
-  /**
-   * Return the maximum threads usable by a script given available server RAM and
-   * script requirement.
-   * @remarks
-   * RAM cost: 0 GB
-   *
-   * @param {number} available - Available server RAM.
-   * @param {number} required - Script RAM requirement.
-   * @returns {number} Maximum usable threads.
-   */
-  max_threads: (available, required) => Math.floor(available / required),
-};

@@ -23,8 +23,8 @@ export async function main(ns) {
       'INFO: Purchases servers automatically with the specified amount of RAM (in gigabytes).' +
         ' Optionally executes a hack script with maximum possible threads. Target hostname' +
         ' determined automatically if not specified.' +
-        `\nScript Usage: > run ${ns.getScriptName()} <--hack> {ram} <hostname>` +
-        `\n     Example: > run ${ns.getScriptName()} --hack 8 n00dles`
+        `\n[Usage   /]> run ${ns.getScriptName()} <--hack> {ram} <hostname>` +
+        `\n[Example /]> run ${ns.getScriptName()} --hack 8 n00dles`
     );
     return;
   }
@@ -44,7 +44,7 @@ export async function main(ns) {
       try {
         // Purchase server and create hostname.
         const hostname = ns.purchaseServer(`pserv-${i}-${ram}GB`, ram);
-        ns.tprint(`SUCCESS! ${hostname} purchased for \$${price}.`);
+        ns.tprint(`INFO: ${hostname} purchased for \$${price}.`);
 
         // Copy and execute hack script if specified.
         if (flags.hack) {
@@ -53,7 +53,7 @@ export async function main(ns) {
           const pid = ns.exec(script, hostname, threads, target);
           ns.tprint(
             pid
-              ? `INFO: ${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
+              ? `SUCCESS! ${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
               : `ERROR! ${script} failed to execute on ${hostname}.`
           );
         }
