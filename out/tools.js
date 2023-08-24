@@ -4,6 +4,7 @@
  * RAM cost: 2.25 GB
  *
  * Netscript environment functions require the --ns flag.
+ * Function names are not case sensitive.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
@@ -18,7 +19,7 @@ export function main(ns) {
   if (flags.help) {
     ns.tprint(
       'INFO: Allows terminal usage of library functions via arguments. Netscript environment' +
-        ' functions require the --ns flag.' +
+        ' functions require the --ns flag. Function names are not case sensitive.' +
         `\n[Usage   /]> run ${ns.getScriptName()} <--ns> {command} <arg1 arg2...>` +
         `\n[Example /]> run ${ns.getScriptName()} --ns get_servers term home`
     );
@@ -39,7 +40,7 @@ export function main(ns) {
   }
 
   // Print formatted result.
-  ns.tprint('INFO: ' + Array.isArray(result) ? `\n${result.join('\n')}` : result);
+  ns.tprint(`INFO: ${Array.isArray(result) ? `\n${result.join('\n')}` : result}`);
 }
 
 /**
@@ -90,13 +91,25 @@ export function open_ports(ns, target) {
  * @remarks
  * RAM cost: 0.2 GB
  *
+ * Recursively scans servers up to the specified depth. Search term is case sensitive.
+ *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} [hostname=home] - Optional. Hostname of server to scan. (Default: home)
+ * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
  * @param {string} [term] - Optional. Search term for server names.
  * @returns {string[]} Array of servers.
  */
-export function get_servers(ns, hostname = 'home', term = '') {
-  return ns.scan(hostname).filter((server) => server.includes(term));
+export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
+  const servers = ns.scan(hostname);
+
+  if (depth > 1)
+    servers.forEach((server) =>
+      servers.push(
+        ...get_servers(ns, server, depth - 1, term).filter((server) => !servers.includes(server))
+      )
+    );
+
+  return servers.filter((server) => server.includes(term));
 }
 
 /**
@@ -109,7 +122,7 @@ export function get_servers(ns, hostname = 'home', term = '') {
  * @returns {string[]} Array of purchased servers.
  */
 export function get_purchased_servers(ns, term = 'pserv') {
-  return get_servers(ns, 'home', term);
+  return get_servers(ns, 'home', 1, term);
 }
 
 /**
