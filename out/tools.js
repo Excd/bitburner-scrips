@@ -1,7 +1,7 @@
 /**
  * Interpret arguments as library function calls.
  * @remarks
- * RAM cost: 2.25 GB
+ * RAM cost: 2.4 GB
  *
  * Netscript environment functions require the --ns flag.
  * Function names are not case sensitive.
@@ -50,8 +50,7 @@ export function main(ns) {
  */
 export const lib = {
   /**
-   * Return the maximum threads usable by a script given available server RAM and
-   * script requirement.
+   * Return the maximum possible threads given a script RAM requirement and available server RAM.
    * @remarks
    * RAM cost: 0 GB
    *
@@ -98,6 +97,8 @@ export function open_ports(ns, target) {
  * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
  * @param {string} [term] - Optional. Search term for server names.
  * @returns {string[]} Array of servers.
+ *
+ * @todo Improve search speed of large depth values.
  */
 export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
   const servers = ns.scan(hostname);
@@ -105,7 +106,9 @@ export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
   if (depth > 1)
     servers.forEach((server) =>
       servers.push(
-        ...get_servers(ns, server, depth - 1, term).filter((server) => !servers.includes(server))
+        ...get_servers(ns, server, depth - 1, term).filter(
+          (server) => !servers.includes(server) && server !== hostname
+        )
       )
     );
 
@@ -113,9 +116,11 @@ export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
 }
 
 /**
- * Return an array of purchased servers. Cheaper alternative to ns.getPurchasedServers().
+ * Return an array of purchased servers.
  * @remarks
  * RAM cost: 0.2 GB
+ *
+ * Cheaper alternative to ns.getPurchasedServers().
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} [term=pserv] - Optional. Search term for server names. (Default: pserv)
@@ -126,20 +131,136 @@ export function get_purchased_servers(ns, term = 'pserv') {
 }
 
 /**
- * Return the server with the most money available.
+ * Return the server with the most money available that is not already targeted.
  * @remarks
- * RAM cost: 0.3 GB
+ * RAM cost: 0.45 GB
+ *
+ * Recursively scans servers up to the specified depth.
+ * Attempts to avoid servers already targeted by hack scripts.
+ * Only servers with an appropriate hacking level are considered.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
  * @returns {string} Server hostname with the most money available.
  */
-export function get_target(ns) {
+export function get_target(ns, depth = 1) {
+  const portNumber = 1;
+  const activeTargets = peek_port_array(ns, portNumber);
+
   let target = { hostname: '', money: 0 };
 
-  get_servers(ns).forEach((server) => {
-    if (ns.getServerMoneyAvailable(server) > target.money)
+  // Search for target.
+  get_servers(ns, 'home', depth).forEach((server) => {
+    if (
+      ns.getServerMoneyAvailable(server) > target.money &&
+      !activeTargets.includes(server) &&
+      ns.getServerRequiredHackingLevel(server) <= ns.getHackingLevel() &&
+      server !== 'home'
+    )
       target = { hostname: server, money: ns.getServerMoneyAvailable(server) };
   });
 
+  // If no valid target found, erase active targets and try again.
+  if (target.hostname == '' || target.money == 0) {
+    clear_port_array(ns, portNumber);
+    const hostname = get_target(ns);
+    if (hostname) {
+      return hostname;
+    } else {
+      // If still no valid target found, terminate with error.
+      ns.tprint('ERROR! No target found.');
+      ns.exit();
+    }
+  }
+
   return target.hostname;
+}
+
+/**
+ * Return the first element of specified port data as an array.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * Element is not removed from the port. Array data must be space delimited.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @returns {string[]} Port data array.
+ */
+export function peek_port_array(ns, portNumber) {
+  return ns.peek(portNumber).trim().replace('NULL PORT DATA', '').split(' ');
+}
+
+/**
+ * Return the first element of specified port as an array and remove it.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * Element is removed from the port. Array data must be space delimited.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @returns {string[]} Port data array.
+ */
+export function read_port_array(ns, portNumber) {
+  return ns.readPort(portNumber).trim().replace('NULL PORT DATA', '').split(' ');
+}
+
+/**
+ * Write an array to the specified port.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * Array data must be space delimited.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @param {string[]} array - Array to write.
+ */
+export function write_port_array(ns, portNumber, array) {
+  ns.writePort(portNumber, array.join(' ').trim(), 'w');
+}
+
+/**
+ * Push an element to the end of the specified port array.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @param {string} target - Element to push.
+ */
+export function push_port_array_element(ns, portNumber, target) {
+  const array = read_port_array(ns, portNumber);
+  array.push(target);
+  write_port_array(ns, portNumber, array);
+}
+
+/**
+ * Delete an element from the specified port array.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @param {string} target - Element to delete.
+ */
+export function delete_port_array_element(ns, portNumber, target) {
+  write_port_array(
+    ns,
+    portNumber,
+    read_port_array(ns, portNumber).filter((x) => x !== target)
+  );
+}
+
+/**
+ * Clear the specified port array.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ */
+export function clear_port_array(ns, portNumber) {
+  ns.readPort(portNumber);
 }

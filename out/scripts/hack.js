@@ -1,9 +1,9 @@
-import { open_ports, get_target } from 'tools';
+import { push_port_array_element, delete_port_array_element, open_ports, get_target } from 'tools';
 
 /**
- * Basic hack script.
+ * Basic hack.
  * @remarks
- * RAM cost: 3 GB
+ * RAM cost: 3.15 GB
  *
  * Automatically determines target hostname if not specified.
  *
@@ -15,19 +15,26 @@ export async function main(ns) {
     ns.tprint(
       'INFO: Weakens or grows the target server automatically at predetermined thresholds.' +
         ' Hostname determined automatically if not specified.' +
-        `\n[Usage   /]> run ${ns.getScriptName()} {hostname} <-t threads>` +
+        `\n[Usage   /]> run ${ns.getScriptName()} <hostname> <-t threads>` +
         `\n[Example /]> run ${ns.getScriptName()} n00dles -t 3`
     );
     return;
   }
 
   // Arguments.
-  const target = ns.args[0] == null ? get_target(ns) : ns.args[0];
+  const target = ns.args[0] == null ? get_target(ns, 4) : ns.args[0];
   // Constants.
+  const portNumber = 1;
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
   const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
+  // Push target to port array and register atExit handler.
   ns.tprint(`INFO: Targeting ${target}.`);
+  push_port_array_element(ns, portNumber, target);
+  ns.atExit(() => {
+    delete_port_array_element(ns, portNumber, target);
+    ns.tprint(`INFO: Hack script targeting ${target} terminated.`);
+  });
 
   // Attempt to open ports and gain root access.
   open_ports(ns, target);
