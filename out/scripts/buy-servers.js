@@ -33,9 +33,9 @@ export async function main(ns) {
   const ram = ns.args[flags.hack ? 1 : 0];
   let target = ns.args[2];
   // Constants.
+  const script = 'scripts/hack.js';
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
-  const script = 'scripts/hack.js';
 
   // Attempt to purchase servers until limit reached.
   for (let i = get_purchased_servers(ns).length; i < limit; ) {
@@ -48,7 +48,7 @@ export async function main(ns) {
 
         // Copy and execute hack script if specified.
         if (flags.hack) {
-          ns.scp(script, hostname);
+          ns.scp(['tools.js', script], hostname);
           const threads = lib.max_threads(ram, ns.getScriptRam(script));
           const pid = ns.exec(script, hostname, threads, target);
           ns.tprint(
