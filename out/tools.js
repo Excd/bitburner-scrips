@@ -28,7 +28,7 @@ export function main(ns) {
       'INFO: Allows terminal usage of library functions via arguments. Library name flag' +
         ' is required. Function names are not case sensitive.' +
         `\n[Usage   /]> run ${ns.getScriptName()} {--library} {command} <arg1 arg2...>` +
-        `\n[Example /]> run ${ns.getScriptName()} --server get_servers term home`
+        `\n[Example /]> run ${ns.getScriptName()} --server get_servers home 2`
     );
     return;
   }
@@ -50,6 +50,17 @@ export function main(ns) {
   ns.tprint(`INFO: ${Array.isArray(result) ? `\n${result.join('\n')}` : result}`);
 }
 
+/**
+ * Resolve library function call.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {{ [key: string]: import('@ns').ScriptArg | string[] }} flags - Flags object.
+ * @param {string} command - Function name.
+ * @param {string[]} args - Function arguments.
+ * @returns {any} Function result.
+ */
 function resolveCommand(ns, flags, command, ...args) {
   if (flags.std) return std[command](...args);
   if (flags.server) return server[command](ns, ...args);
