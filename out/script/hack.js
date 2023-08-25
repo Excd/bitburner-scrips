@@ -1,4 +1,6 @@
-import { push_port_array_element, delete_port_array_element, open_ports, get_target } from 'tools';
+import { get_target } from 'lib/server';
+import { push_port_array_element, delete_port_array_element } from 'lib/port';
+import { open_ports } from 'lib/hacking';
 
 /**
  * Basic hack.

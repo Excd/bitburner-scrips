@@ -1,9 +1,10 @@
-import { lib, get_purchased_servers } from 'tools';
+import { max_threads } from 'lib/std';
+import { get_purchased_servers } from 'lib/server';
 
 /**
  * Automatically purchase servers and optionally run hack scripts.
  * @remarks
- * RAM cost: 6.55 GB
+ * RAM cost: 6.45 GB
  *
  * Optionally executes a hack script with maximum possible threads. Target hostname
  * determined automatically if not specified.
@@ -14,7 +15,7 @@ export async function main(ns) {
   // Get flags.
   const flags = ns.flags([
     ['help', false],
-    ['hack', false],
+    ['deploy', false],
   ]);
 
   // Help message.
@@ -23,17 +24,18 @@ export async function main(ns) {
       'INFO: Purchases servers automatically with the specified amount of RAM (in gigabytes).' +
         ' Optionally executes a hack script with maximum possible threads. Target hostname' +
         ' determined automatically if not specified.' +
-        `\n[Usage   /]> run ${ns.getScriptName()} <--hack> {ram} <hostname>` +
-        `\n[Example /]> run ${ns.getScriptName()} --hack 8 n00dles`
+        `\n[Usage   /]> run ${ns.getScriptName()} <--deploy> {ram} <hostname>` +
+        `\n[Example /]> run ${ns.getScriptName()} --deploy 8 n00dles`
     );
     return;
   }
 
   // Arguments.
-  const ram = ns.args[flags.hack ? 1 : 0];
+  const ram = ns.args[flags.deploy ? 1 : 0];
   let target = ns.args[2];
   // Constants.
-  const script = 'scripts/hack.js';
+  const script = 'script/hack.js';
+  const libs = ['lib/server.js', 'lib/port.js', 'lib/hacking.js'];
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
 
@@ -47,9 +49,9 @@ export async function main(ns) {
         ns.tprint(`INFO: ${hostname} purchased for \$${price}.`);
 
         // Copy and execute hack script if specified.
-        if (flags.hack) {
-          ns.scp(['tools.js', script], hostname);
-          const threads = lib.max_threads(ram, ns.getScriptRam(script));
+        if (flags.deploy) {
+          ns.scp([script, ...libs], hostname);
+          const threads = max_threads(ram, ns.getScriptRam(script));
           const pid = ns.exec(script, hostname, threads, target);
           ns.tprint(
             pid
@@ -59,7 +61,7 @@ export async function main(ns) {
         }
       } catch (e) {
         ns.tprint(`ERROR! Script terminated prematurely.\n${e}`);
-        return;
+        ns.exit();
       }
 
       i++; //	Increment on successful purchase.
