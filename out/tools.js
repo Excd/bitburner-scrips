@@ -228,11 +228,11 @@ export function write_port_array(ns, portNumber, array) {
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {number} portNumber - Port number.
- * @param {string} target - Element to push.
+ * @param {string} element - Element to push.
  */
-export function push_port_array_element(ns, portNumber, target) {
+export function push_port_array_element(ns, portNumber, element) {
   const array = read_port_array(ns, portNumber);
-  array.push(target);
+  array.push(element);
   write_port_array(ns, portNumber, array);
 }
 
@@ -243,13 +243,13 @@ export function push_port_array_element(ns, portNumber, target) {
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {number} portNumber - Port number.
- * @param {string} target - Element to delete.
+ * @param {string} element - Element to delete.
  */
-export function delete_port_array_element(ns, portNumber, target) {
+export function delete_port_array_element(ns, portNumber, element) {
   write_port_array(
     ns,
     portNumber,
-    read_port_array(ns, portNumber).filter((x) => x !== target)
+    read_port_array(ns, portNumber).filter((x) => x !== element)
   );
 }
 
