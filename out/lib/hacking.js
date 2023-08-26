@@ -41,7 +41,7 @@ export function open_ports(ns, target) {
  * @returns {number} PID of the script.
  */
 export function deploy_hack(ns, script, hostname, target, threads) {
-  const libs = ['lib/port.js', 'lib/hacking.js'];
+  const libs = ['lib/server.js', 'lib/port.js', 'lib/hacking.js'];
 
   ns.scp([script, ...libs], hostname);
   const pid = ns.exec(script, hostname, threads, target);
