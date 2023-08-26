@@ -6,7 +6,7 @@ import * as hacking from 'lib/hacking';
 /**
  * Interpret arguments as library function calls.
  * @remarks
- * RAM cost: 2.4 GB
+ * RAM cost: 9.85 GB
  *
  * Library name flag is required. Function names are not case sensitive.
  *
@@ -16,10 +16,10 @@ export function main(ns) {
   // Get flags.
   const flags = ns.flags([
     ['help', false],
-    ['std', false],
-    ['server', false],
-    ['port', false],
-    ['hacking', false],
+    ['std', ''],
+    ['server', ''],
+    ['port', ''],
+    ['hacking', ''],
   ]);
 
   // Help message.
@@ -27,20 +27,20 @@ export function main(ns) {
     ns.tprint(
       'INFO: Allows terminal usage of library functions via arguments. Library name flag' +
         ' is required. Function names are not case sensitive.' +
-        `\n[Usage   /]> run ${ns.getScriptName()} {--library} {command} <arg1 arg2...>` +
+        `\n[Usage   /]> run ${ns.getScriptName()} {--library command} <arg1 arg2...>` +
         `\n[Example /]> run ${ns.getScriptName()} --server get_servers home 2`
     );
     return;
   }
 
   // Arguments.
-  const command = ns.args[1].toLowerCase();
+  const command = ns.args[1];
   const args = ns.args.slice(2);
 
   // Attempt to run command and get result.
   let result;
   try {
-    result = resolveCommand(ns, flags, command, ...args);
+    result = resolveCommand(ns, flags, ...args);
   } catch (e) {
     ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
     return;
@@ -57,13 +57,12 @@ export function main(ns) {
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {{ [key: string]: import('@ns').ScriptArg | string[] }} flags - Flags object.
- * @param {string} command - Function name.
  * @param {string[]} args - Function arguments.
  * @returns {any} Function result.
  */
-function resolveCommand(ns, flags, command, ...args) {
-  if (flags.std) return std[command](...args);
-  if (flags.server) return server[command](ns, ...args);
-  if (flags.port) return port[command](ns, ...args);
-  if (flags.hacking) return hacking[command](ns, ...args);
+function resolveCommand(ns, flags, ...args) {
+  if (flags.std) return std[flags.std](...args);
+  if (flags.server) return server[flags.server](ns, ...args);
+  if (flags.port) return port[flags.port](ns, ...args);
+  if (flags.hacking) return hacking[flags.hacking](ns, ...args);
 }
