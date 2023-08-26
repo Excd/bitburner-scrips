@@ -121,3 +121,19 @@ export function upgrade_server(ns, hostname, ram) {
 
   return result;
 }
+
+/**
+ * Kill all scripts on a server.
+ * @remarks
+ * RAM cost: 0.5 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} hostname - Hostname of server to kill scripts on.
+ */
+export function kill_all_scripts(ns, hostname) {
+  ns.tprint(
+    ns.killall(hostname)
+      ? `SUCCESS! All scripts killed on ${hostname}.`
+      : `WARN! No scripts killed on ${hostname}.`
+  );
+}

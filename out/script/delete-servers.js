@@ -1,4 +1,4 @@
-import { get_purchased_servers, delete_server } from 'lib/server';
+import { get_purchased_servers, delete_server, kill_all_scripts } from 'lib/server';
 
 /**
  * Delete all purchased servers.
@@ -28,8 +28,9 @@ export function main(ns) {
     return;
   }
 
+  // Kill scripts (if specified) and delete servers.
   get_purchased_servers(ns).forEach((server) => {
-    if (flags.k) ns.killall(server);
+    if (flags.k) kill_all_scripts(ns, server);
     delete_server(ns, server);
   });
 }
