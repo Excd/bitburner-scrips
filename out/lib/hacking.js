@@ -1,3 +1,5 @@
+import { peek_port_array, clear_port_array } from 'lib/port';
+
 /**
  * Open all available ports on the target server.
  * @remarks
@@ -20,6 +22,35 @@ export function open_ports(ns, target) {
   programs.forEach((program) => {
     if (ns.fileExists(`${program.name}.exe`, 'home')) program.function(target);
   });
+}
+
+/**
+ * Deploy a hack script to the target server.
+ * @remarks
+ * RAM cost: 1.9 GB
+ *
+ * Script and library files must exist in the home directory.
+ * If the script is successfully executed, the PID is returned. Otherwise returns 0.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} script - Script filename.
+ * @param {string} hostname - Hostname of server to deploy script to.
+ * @param {string} target - Hack target server hostname.
+ * @param {number} threads - Number of threads to use.
+ * @returns {number} PID of the script.
+ */
+export function deploy_hack(ns, script, hostname, target, threads) {
+  const libs = ['lib/port.js', 'lib/hacking.js'];
+
+  ns.scp([script, ...libs], hostname);
+  const pid = ns.exec(script, hostname, threads, target);
+  ns.tprint(
+    pid
+      ? `SUCCESS! ${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
+      : `ERROR! ${script} failed to execute on ${hostname}.`
+  );
+
+  return pid;
 }
 
 /**

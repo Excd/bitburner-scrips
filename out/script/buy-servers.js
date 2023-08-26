@@ -1,5 +1,6 @@
 import { max_threads } from 'lib/std';
 import { get_purchased_servers, buy_server } from 'lib/server';
+import { deploy_hack } from 'lib/hacking';
 
 /**
  * Automatically purchase servers and optionally run hack scripts.
@@ -35,7 +36,6 @@ export async function main(ns) {
   let target = ns.args[2];
   // Constants.
   const script = 'script/hack.js';
-  const libs = ['lib/server.js', 'lib/port.js', 'lib/hacking.js'];
   const limit = ns.getPurchasedServerLimit();
   const price = ns.getPurchasedServerCost(ram);
 
@@ -47,17 +47,9 @@ export async function main(ns) {
         // Purchase server and create hostname.
         const hostname = buy_server(ns, `pserv-${i}-${ram}GB`, ram);
 
-        // Copy and execute hack script if specified.
-        if (flags.deploy) {
-          ns.scp([script, ...libs], hostname);
-          const threads = max_threads(ram, ns.getScriptRam(script));
-          const pid = ns.exec(script, hostname, threads, target);
-          ns.tprint(
-            pid
-              ? `SUCCESS! ${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
-              : `ERROR! ${script} failed to execute on ${hostname}.`
-          );
-        }
+        // Deploy hack if specified.
+        if (flags.deploy)
+          deploy_hack(ns, script, hostname, target, max_threads(ram, ns.getScriptRam(script)));
       } catch (e) {
         ns.tprint(`ERROR! Script terminated prematurely.\n${e}`);
         return;

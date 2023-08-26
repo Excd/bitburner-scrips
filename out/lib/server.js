@@ -44,47 +44,73 @@ export function get_purchased_servers(ns, term = 'pserv') {
 }
 
 /**
- * Return the server with the most money available that is not already targeted.
+ * Purchase a server with specified name and RAM.
  * @remarks
- * RAM cost: 0.45 GB
- *
- * Recursively scans servers up to the specified depth.
- * Attempts to avoid servers already targeted by hack scripts.
- * Only servers with an appropriate hacking level are considered.
+ * RAM cost: 2.5 GB
  *
  * @param {import('@ns').NS} ns - Netscript environment.
- * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
- * @returns {string} Server hostname with the most money available.
+ * @param {string} name - Server name.
+ * @param {number} ram - Server RAM.
+ * @returns {string} Hostname of purchased server.
  */
-export function get_target(ns, depth = 1) {
-  const portNumber = 1;
-  const activeTargets = peek_port_array(ns, portNumber);
+export function buy_server(ns, name, ram) {
+  const hostname = ns.purchaseServer(name, ram);
+  ns.tprint(`INFO: ${hostname} purchased for \$${ns.getPurchasedServerCost(ram)}.`);
+  return hostname;
+}
 
-  let target = { hostname: '', money: 0 };
+/**
+ * Delete a server.
+ * @remarks
+ * RAM cost: 2.25 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} hostname - Hostname of server to delete.
+ * @returns {boolean} True if successful, false otherwise.
+ */
+export function delete_server(ns, hostname) {
+  const result = ns.deleteServer(hostname);
+  ns.tprint(result ? `INFO: ${hostname} deleted.` : `ERROR! ${hostname} could not be deleted.`);
+  return result;
+}
 
-  // Search for target.
-  get_servers(ns, 'home', depth).forEach((server) => {
-    if (
-      ns.getServerMoneyAvailable(server) > target.money &&
-      !activeTargets.includes(server) &&
-      ns.getServerRequiredHackingLevel(server) <= ns.getHackingLevel() &&
-      server !== 'home'
-    )
-      target = { hostname: server, money: ns.getServerMoneyAvailable(server) };
-  });
+/**
+ * Rename a server.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} hostname - Hostname of server to rename.
+ * @param {string} newName - New hostname.
+ * @returns {boolean} True if successful, false otherwise.
+ */
+export function rename_server(ns, hostname, newName) {
+  const result = ns.renamePurchasedServer(hostname, newName);
+  ns.tprint(
+    result ? `INFO: ${hostname} renamed to ${newName}.` : `ERROR! ${hostname} could not be renamed.`
+  );
+  return result;
+}
 
-  // If no valid target found, erase active targets and try again.
-  if (target.hostname == '' || target.money == 0) {
-    clear_port_array(ns, portNumber);
-    const hostname = get_target(ns);
-    if (hostname) {
-      return hostname;
-    } else {
-      // If still no valid target found, terminate with error.
-      ns.tprint('ERROR! No target found.');
-      ns.exit();
-    }
-  }
-
-  return target.hostname;
+/**
+ * Upgrade a server's RAM.
+ * @remarks
+ * RAM cost: 0.3 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} hostname - Hostname of server to upgrade.
+ * @param {number} ram - New RAM.
+ * @returns {boolean} True if successful, false otherwise.
+ */
+export function upgrade_server(ns, hostname, ram) {
+  const oldRam = ns.getServerMaxRam(hostname);
+  const result = ns.upgradePurchasedServer(hostname, ram);
+  ns.tprint(
+    result
+      ? `INFO: ${hostname} upgraded to ${ram}GB RAM for \$${
+          ns.getPurchasedServerCost(ram) - oldRam
+        }.`
+      : `ERROR! ${hostname} could not be upgraded.`
+  );
+  return result;
 }
