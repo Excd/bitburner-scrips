@@ -55,7 +55,11 @@ export function get_purchased_servers(ns, term = 'pserv') {
  */
 export function buy_server(ns, name, ram) {
   const hostname = ns.purchaseServer(name, ram);
-  ns.tprint(`INFO: ${hostname} purchased for \$${ns.getPurchasedServerCost(ram)}.`);
+  ns.tprint(
+    hostname
+      ? `SUCCESS! ${hostname} purchased for \$${ns.getPurchasedServerCost(ram)}.`
+      : `ERROR! ${name} could not be purchased.`
+  );
   return hostname;
 }
 
@@ -70,7 +74,7 @@ export function buy_server(ns, name, ram) {
  */
 export function delete_server(ns, hostname) {
   const result = ns.deleteServer(hostname);
-  ns.tprint(result ? `INFO: ${hostname} deleted.` : `ERROR! ${hostname} could not be deleted.`);
+  ns.tprint(result ? `SUCCESS! ${hostname} deleted.` : `ERROR! ${hostname} could not be deleted.`);
   return result;
 }
 
@@ -82,20 +86,21 @@ export function delete_server(ns, hostname) {
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} hostname - Hostname of server to rename.
  * @param {string} newName - New hostname.
- * @returns {boolean} True if successful, false otherwise.
+ * @returns {string} New hostname.
  */
 export function rename_server(ns, hostname, newName) {
-  const result = ns.renamePurchasedServer(hostname, newName);
   ns.tprint(
-    result ? `INFO: ${hostname} renamed to ${newName}.` : `ERROR! ${hostname} could not be renamed.`
+    ns.renamePurchasedServer(hostname, newName)
+      ? `SUCCESS! ${hostname} renamed to ${newName}.`
+      : `ERROR! ${hostname} could not be renamed.`
   );
-  return result;
+  return newName;
 }
 
 /**
  * Upgrade a server's RAM.
  * @remarks
- * RAM cost: 0.3 GB
+ * RAM cost: 0.55 GB
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} hostname - Hostname of server to upgrade.
@@ -105,12 +110,14 @@ export function rename_server(ns, hostname, newName) {
 export function upgrade_server(ns, hostname, ram) {
   const oldRam = ns.getServerMaxRam(hostname);
   const result = ns.upgradePurchasedServer(hostname, ram);
+
   ns.tprint(
     result
-      ? `INFO: ${hostname} upgraded to ${ram}GB RAM for \$${
-          ns.getPurchasedServerCost(ram) - oldRam
+      ? `SUCCESS! ${hostname} upgraded to ${ram}GB RAM for \$${
+          ns.getPurchasedServerCost(ram) - ns.getPurchasedServerCost(oldRam)
         }.`
       : `ERROR! ${hostname} could not be upgraded.`
   );
+
   return result;
 }

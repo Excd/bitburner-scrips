@@ -7,6 +7,7 @@ import { open_ports, get_target } from 'lib/hacking';
  * RAM cost: 3.15 GB
  *
  * Automatically determines target hostname if not specified.
+ * Runs with one thread by default.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
@@ -23,7 +24,7 @@ export async function main(ns) {
   }
 
   // Arguments.
-  const target = !ns.args[0] ? get_target(ns, 4) : ns.args[0];
+  const target = ns.args[0] || get_target(ns, 4);
   // Constants.
   const portNumber = 1;
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
