@@ -1,6 +1,5 @@
-import { get_target } from 'lib/server';
 import { push_port_array_element, delete_port_array_element } from 'lib/port';
-import { open_ports } from 'lib/hacking';
+import { open_ports, get_target } from 'lib/hacking';
 
 /**
  * Basic hack.
@@ -24,7 +23,7 @@ export async function main(ns) {
   }
 
   // Arguments.
-  const target = ns.args[0] == null ? get_target(ns, 4) : ns.args[0];
+  const target = !ns.args[0] ? get_target(ns, 4) : ns.args[0];
   // Constants.
   const portNumber = 1;
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;

@@ -1,5 +1,5 @@
 import { max_threads } from 'lib/std';
-import { get_purchased_servers } from 'lib/server';
+import { get_purchased_servers, buy_server } from 'lib/server';
 
 /**
  * Automatically purchase servers and optionally run hack scripts.
@@ -45,8 +45,7 @@ export async function main(ns) {
     if (ns.getServerMoneyAvailable('home') >= price) {
       try {
         // Purchase server and create hostname.
-        const hostname = ns.purchaseServer(`pserv-${i}-${ram}GB`, ram);
-        ns.tprint(`INFO: ${hostname} purchased for \$${price}.`);
+        const hostname = buy_server(ns, `pserv-${i}-${ram}GB`, ram);
 
         // Copy and execute hack script if specified.
         if (flags.deploy) {
@@ -61,7 +60,7 @@ export async function main(ns) {
         }
       } catch (e) {
         ns.tprint(`ERROR! Script terminated prematurely.\n${e}`);
-        ns.exit();
+        return;
       }
 
       i++; //	Increment on successful purchase.

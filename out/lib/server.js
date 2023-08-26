@@ -1,5 +1,3 @@
-import { peek_port_array, clear_port_array } from 'lib/port';
-
 /**
  * Return an array of servers.
  * @remarks
