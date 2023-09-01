@@ -11,13 +11,11 @@ import { get_purchased_servers, delete_server, kill_all_scripts } from 'lib/serv
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export function main(ns) {
-  // Get flags.
   const flags = ns.flags([
     ['help', false],
     ['k', false],
   ]);
 
-  // Help message.
   if (flags.help) {
     ns.tprint(
       'INFO: Deletes all purchased servers and optionally kills all running scripts.' +

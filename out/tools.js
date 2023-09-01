@@ -13,7 +13,6 @@ import * as hacking from 'lib/hacking';
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export function main(ns) {
-  // Get flags.
   const flags = ns.flags([
     ['help', false],
     ['std', ''],
@@ -22,7 +21,6 @@ export function main(ns) {
     ['hacking', ''],
   ]);
 
-  // Help message.
   if (flags.help) {
     ns.tprint(
       'INFO: Allows terminal usage of library functions via arguments. Library name flag' +

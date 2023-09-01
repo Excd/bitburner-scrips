@@ -13,13 +13,11 @@ import { deploy_hack } from 'lib/hacking';
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
-  // Get flags.
   const flags = ns.flags([
     ['help', false],
     ['deploy', false],
   ]);
 
-  // Help message.
   if (flags.help) {
     ns.tprint(
       'INFO: Purchases servers automatically with the specified amount of RAM (in gigabytes).' +

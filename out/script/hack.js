@@ -12,7 +12,6 @@ import { open_ports, get_target } from 'lib/hacking';
  * @param {import('@ns').NS} ns - Netscript environment.
  */
 export async function main(ns) {
-  // Help message.
   if (ns.flags([['help', false]]).help) {
     ns.tprint(
       'INFO: Weakens or grows the target server automatically at predetermined thresholds.' +
