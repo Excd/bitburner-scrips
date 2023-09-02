@@ -153,7 +153,7 @@ export function get_lore(ns, hostname) {
   if (lore.length) {
     lore.forEach((file) => {
       ns.tprint(
-        ns.scp(file, 'home')
+        ns.scp(file, 'home', hostname)
           ? `SUCCESS! ${file} copied from ${hostname}.`
           : `ERROR! ${file} could not be copied from ${hostname}.`
       );
