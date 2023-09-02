@@ -8,24 +8,25 @@
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string} [hostname=home] - Optional. Hostname of server to scan. (Default: home)
  * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
- * @param {string} [term] - Optional. Search term for server names.
+ * @param {string} [excludeTerm] - Optional. Exclude servers with this term in their name.
+ * @param {string} [searchTerm] - Optional. Search term for server names.
  * @returns {string[]} Array of servers.
  *
  * @todo Improve search speed of large depth values.
  */
-export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
+export function get_servers(ns, hostname = 'home', depth = 1, excludeTerm = '', searchTerm = '') {
   const servers = ns.scan(hostname);
 
   if (depth > 1)
     servers.forEach((server) =>
       servers.push(
-        ...get_servers(ns, server, depth - 1, term).filter(
+        ...get_servers(ns, server, depth - 1, excludeTerm, searchTerm).filter(
           (server) => !servers.includes(server) && server !== hostname
         )
       )
     );
 
-  return servers.filter((server) => server.includes(term));
+  return servers.filter((server) => server.includes(searchTerm) && !server.includes(excludeTerm));
 }
 
 /**
@@ -40,7 +41,7 @@ export function get_servers(ns, hostname = 'home', depth = 1, term = '') {
  * @returns {string[]} Array of purchased servers.
  */
 export function get_purchased_servers(ns, term = 'pserv') {
-  return get_servers(ns, 'home', 1, term);
+  return get_servers(ns, 'home', 1, '', term);
 }
 
 /**
