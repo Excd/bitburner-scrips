@@ -138,3 +138,27 @@ export function kill_all_scripts(ns, hostname) {
       : `WARN! No scripts killed on ${hostname}.`
   );
 }
+
+/**
+ * Copy lore (.lit files) from a server to home.
+ * @remarks
+ * RAM cost: 0.8 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} hostname - Hostname of server to copy lore from.
+ */
+export function get_lore(ns, hostname) {
+  const lore = ns.ls(hostname, '.lit');
+
+  if (lore.length) {
+    lore.forEach((file) => {
+      ns.tprint(
+        ns.scp(file, 'home')
+          ? `SUCCESS! ${file} copied from ${hostname}.`
+          : `ERROR! ${file} could not be copied from ${hostname}.`
+      );
+    });
+  } else {
+    ns.tprint(`INFO: No lore found on ${hostname}.`);
+  }
+}
