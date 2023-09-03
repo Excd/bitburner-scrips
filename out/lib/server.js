@@ -26,7 +26,11 @@ export function get_servers(ns, hostname = 'home', depth = 1, excludeTerm = '', 
       )
     );
 
-  return servers.filter((server) => server.includes(searchTerm) && !server.includes(excludeTerm));
+  return servers.filter(
+    (server) =>
+      (searchTerm ? server.includes(searchTerm) : true) &&
+      (excludeTerm ? !server.includes(excludeTerm) : true)
+  );
 }
 
 /**
