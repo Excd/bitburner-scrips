@@ -1,5 +1,10 @@
-import { max_threads } from 'lib/std';
-import { get_purchased_servers, upgrade_server, rename_server, kill_all_scripts } from 'lib/server';
+import {
+  get_purchased_servers,
+  upgrade_server,
+  rename_server,
+  max_threads,
+  kill_all_scripts,
+} from 'lib/server';
 import { deploy_hack } from 'lib/hacking';
 
 /**

@@ -1,4 +1,3 @@
-import * as std from 'lib/std';
 import * as server from 'lib/server';
 import * as port from 'lib/port';
 import * as hacking from 'lib/hacking';
@@ -15,7 +14,6 @@ import * as hacking from 'lib/hacking';
 export function main(ns) {
   const flags = ns.flags([
     ['help', false],
-    ['std', ''],
     ['server', ''],
     ['port', ''],
     ['hacking', ''],
@@ -59,7 +57,6 @@ export function main(ns) {
  * @returns {any} Function result.
  */
 function resolveCommand(ns, flags, ...args) {
-  if (flags.std) return std[flags.std](...args);
   if (flags.server) return server[flags.server](ns, ...args);
   if (flags.port) return port[flags.port](ns, ...args);
   if (flags.hacking) return hacking[flags.hacking](ns, ...args);

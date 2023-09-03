@@ -1,5 +1,4 @@
-import { max_threads } from 'lib/std';
-import { get_purchased_servers, buy_server } from 'lib/server';
+import { get_purchased_servers, buy_server, max_threads } from 'lib/server';
 import { deploy_hack } from 'lib/hacking';
 
 /**

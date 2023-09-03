@@ -128,6 +128,19 @@ export function upgrade_server(ns, hostname, ram) {
 }
 
 /**
+ * Return the maximum possible threads given a script RAM requirement and available server RAM.
+ * @remarks
+ * RAM cost: 0 GB
+ *
+ * @param {number} available - Available server RAM.
+ * @param {number} required - Script RAM requirement.
+ * @returns {number} Maximum usable threads.
+ */
+export function max_threads(available, required) {
+  return Math.floor(available / required);
+}
+
+/**
  * Kill all scripts on a server.
  * @remarks
  * RAM cost: 0.5 GB
@@ -155,13 +168,13 @@ export function get_lore(ns, hostname) {
   const lore = ns.ls(hostname, '.lit');
 
   if (lore.length) {
-    lore.forEach((file) => {
+    lore.forEach((file) =>
       ns.tprint(
         ns.scp(file, 'home', hostname)
           ? `SUCCESS! ${file} copied from ${hostname}.`
           : `ERROR! ${file} could not be copied from ${hostname}.`
-      );
-    });
+      )
+    );
   } else {
     ns.tprint(`INFO: No lore found on ${hostname}.`);
   }
