@@ -1,10 +1,10 @@
 /**
- * Return an array of servers all nearby servers.
+ * Return an array of all nearby servers.
  * @remarks
  * RAM cost: 0.2 GB
  *
  * Optionally search or exclude servers with specified terms in their name.
- * Search and exclude terms are case sensitive.
+ * Terms are case sensitive. Home server is always excluded from results.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  * @param {string[]} [searchTerms] - Optional. Search for servers with these terms in their name.

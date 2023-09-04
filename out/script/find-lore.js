@@ -5,8 +5,8 @@ import { get_lore, get_servers } from 'lib/server';
  * @remarks
  * RAM cost: 2.6 GB
  *
- * Automatically excludes purchased servers. Optionally exclude servers with a specified term
- * instead.
+ * Automatically excludes purchased servers from search.
+ * Optionally exclude servers with a specified term instead.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
