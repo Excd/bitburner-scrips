@@ -2,12 +2,11 @@ import { get_purchased_servers, get_servers, max_threads } from 'lib/server';
 import { deploy_hack } from 'lib/hacking';
 
 /**
- * Deploy a hack script to purchased or nearby servers up to a specified search depth.
+ * Deploy a hack script to either purchased or nearby servers.
  * @remarks
  * RAM cost: 3.9 GB
  *
- * Hack script runs with maximum possible threads. Target hostname determined automatically if
- * not specified.
+ * Hack script runs with maximum possible threads. Target hostname determined automatically.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
  */
@@ -19,21 +18,17 @@ export async function main(ns) {
 
   if (flags.help) {
     ns.tprint(
-      'INFO: Deploy a hack script to purchased or nearby servers up to a specified search depth.' +
-        ' Hack script runs with maximum possible threads. Target hostname determined' +
-        ' automatically if not specified.' +
-        `\n[Usage   /]> run ${ns.getScriptName()} <depth> <hostname> <-p>` +
+      'INFO: Deploy a hack script to either purchased or nearby servers.' +
+        ' Hack script runs with maximum possible threads and determines target automatically.' +
+        `\n[Usage   /]> run ${ns.getScriptName()} <-p>` +
         `\n[Example /]> run ${ns.getScriptName()} -p`
     );
     return;
   }
 
-  // Arguments.
-  const depth = ns.args[0] || 1;
-  const hostname = ns.args[1] || '';
   // Constants.
   const script = 'script/hack.js';
-  const servers = flags.p ? get_purchased_servers() : get_servers(ns, 'home', depth);
+  const servers = flags.p ? get_purchased_servers() : get_servers(ns, [], ['pserv']);
 
   // Deploy hack.
   servers.forEach((server) => {
@@ -42,6 +37,6 @@ export async function main(ns) {
       ns.getScriptRam(script)
     );
 
-    if (threads > 0) deploy_hack(ns, script, server, hostname, threads);
+    if (threads > 0) deploy_hack(ns, script, server, '', threads);
   });
 }

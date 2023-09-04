@@ -5,7 +5,7 @@ import * as hacking from 'lib/hacking';
 /**
  * Interpret arguments as library function calls.
  * @remarks
- * RAM cost: 9.85 GB
+ * RAM cost: 10.05 GB
  *
  * Library name flag is required. Function names are not case sensitive.
  *
@@ -22,7 +22,7 @@ export function main(ns) {
   if (flags.help) {
     ns.tprint(
       'INFO: Allows terminal usage of library functions via arguments. Library name flag' +
-        ' is required. Function names are not case sensitive.' +
+        ' is required. Function names are not case sensitive. Requires a lot of RAM.' +
         `\n[Usage   /]> run ${ns.getScriptName()} {--library command} <arg1 arg2...>` +
         `\n[Example /]> run ${ns.getScriptName()} --server get_servers home 2`
     );

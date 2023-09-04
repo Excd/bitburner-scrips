@@ -1,35 +1,35 @@
 /**
- * Return an array of servers.
+ * Return an array of servers all nearby servers.
  * @remarks
  * RAM cost: 0.2 GB
  *
- * Recursively scans servers up to the specified depth. Search term is case sensitive.
+ * Optionally search or exclude servers with specified terms in their name.
+ * Search and exclude terms are case sensitive.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
- * @param {string} [hostname=home] - Optional. Hostname of server to scan. (Default: home)
- * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
- * @param {string} [excludeTerm] - Optional. Exclude servers with this term in their name.
- * @param {string} [searchTerm] - Optional. Search term for server names.
+ * @param {string[]} [searchTerms] - Optional. Search for servers with these terms in their name.
+ * @param {string[]} [excludeTerms] - Optional. Exclude servers with these terms in their name.
  * @returns {string[]} Array of servers.
- *
- * @todo Improve search speed of large depth values.
  */
-export function get_servers(ns, hostname = 'home', depth = 1, excludeTerm = '', searchTerm = '') {
-  const servers = ns.scan(hostname);
+export function get_servers(ns, searchTerms = [], excludeTerms = []) {
+  const servers = [];
+  const queue = ['home'];
 
-  if (depth > 1)
-    servers.forEach((server) =>
-      servers.push(
-        ...get_servers(ns, server, depth - 1, excludeTerm, searchTerm).filter(
-          (server) => !servers.includes(server) && server !== hostname
-        )
-      )
-    );
+  while (queue.length) {
+    const server = queue.shift();
+    const scanned = ns.scan(server);
+
+    scanned.forEach((server) => {
+      if (!servers.includes(server) && !queue.includes(server)) queue.push(server);
+    });
+
+    if (server !== 'home') servers.push(server);
+  }
 
   return servers.filter(
     (server) =>
-      (searchTerm ? server.includes(searchTerm) : true) &&
-      (excludeTerm ? !server.includes(excludeTerm) : true)
+      (searchTerms.length ? searchTerms.some((term) => server.includes(term)) : true) &&
+      (excludeTerms.length ? !excludeTerms.some((term) => server.includes(term)) : true)
   );
 }
 
@@ -45,7 +45,7 @@ export function get_servers(ns, hostname = 'home', depth = 1, excludeTerm = '', 
  * @returns {string[]} Array of purchased servers.
  */
 export function get_purchased_servers(ns, term = 'pserv') {
-  return get_servers(ns, 'home', 1, '', term);
+  return get_servers(ns, [term]);
 }
 
 /**

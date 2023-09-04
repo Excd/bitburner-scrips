@@ -59,27 +59,24 @@ export function deploy_hack(ns, script, hostname, target, threads) {
  * @remarks
  * RAM cost: 0.45 GB
  *
- * Recursively scans servers up to the specified depth.
  * Attempts to avoid servers already targeted by hack scripts.
  * Only servers with an appropriate hacking level are considered.
  *
  * @param {import('@ns').NS} ns - Netscript environment.
- * @param {number} [depth=1] - Optional. Depth of scan. (Default: 1)
- * @returns {string} Server hostname with the most money available.
+ * @returns {string} Optimal target server hostname.
  */
-export function get_target(ns, depth = 1) {
+export function get_target(ns) {
   const portNumber = 1;
   const activeTargets = peek_port_array(ns, portNumber);
 
   let target = { hostname: '', money: 0 };
 
   // Search for target.
-  get_servers(ns, 'home', depth).forEach((server) => {
+  get_servers(ns, [], ['pserv']).forEach((server) => {
     if (
       ns.getServerMoneyAvailable(server) > target.money &&
       !activeTargets.includes(server) &&
-      ns.getServerRequiredHackingLevel(server) <= ns.getHackingLevel() &&
-      server !== 'home'
+      ns.getServerRequiredHackingLevel(server) <= ns.getHackingLevel()
     )
       target = { hostname: server, money: ns.getServerMoneyAvailable(server) };
   });
