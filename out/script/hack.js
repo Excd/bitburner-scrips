@@ -23,7 +23,7 @@ export async function main(ns) {
   }
 
   // Arguments.
-  const target = ns.args[0] || get_target(ns, 4);
+  const target = ns.args[0] || get_target(ns);
   // Constants.
   const portNumber = 1;
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
