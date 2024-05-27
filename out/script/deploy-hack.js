@@ -4,7 +4,7 @@ import { deploy_hack } from 'lib/hacking';
 /**
  * Deploy a hack script to either purchased or nearby servers.
  * @remarks
- * RAM cost: 3.9 GB
+ * RAM cost: 4.3 GB
  *
  * Hack script runs with maximum possible threads. Target hostname determined automatically.
  *

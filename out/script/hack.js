@@ -1,5 +1,5 @@
-import { push_port_array_element, delete_port_array_element } from 'lib/port';
-import { open_ports, get_target } from 'lib/hacking';
+import { push_port_array_element, delete_port_array_element, clear_port_array } from 'lib/port';
+import { get_target, get_root } from 'lib/hacking';
 
 /**
  * Basic hack.
@@ -23,11 +23,23 @@ export async function main(ns) {
   }
 
   // Arguments.
-  const target = ns.args[0] || get_target(ns);
-  // Constants.
+  let target = ns.args[0];
   const portNumber = 1;
-  const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
-  const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
+
+  // Attempt to open ports and gain root access.
+  if (target) {
+    if (!get_root(ns, target)) return;
+  } else {
+    // Automatically determine target.
+    target = get_target(ns);
+    if (!get_root(ns, target)) {
+      // If unable to get root, clear port array and try again.
+      ns.tprint('INFO: Trying again...');
+      clear_port_array(ns, portNumber);
+      target = get_target(ns);
+      if (!get_root(ns, target)) return;
+    }
+  }
 
   // Push target to port array and register atExit handler.
   ns.tprint(`INFO: Targeting ${target}.`);
@@ -37,9 +49,9 @@ export async function main(ns) {
     ns.tprint(`INFO: Hack script targeting ${target} terminated.`);
   });
 
-  // Attempt to open ports and gain root access.
-  open_ports(ns, target);
-  ns.nuke(target);
+  // Thresholds.
+  const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
+  const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
   // Hack loop.
   while (true) {

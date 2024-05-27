@@ -51,7 +51,7 @@ export function get_root(ns, target) {
 /**
  * Deploy a hack script to the target server.
  * @remarks
- * RAM cost: 1.9 GB
+ * RAM cost: 2.3 GB
  *
  * Script and library files must exist in the home directory.
  * If the script is successfully executed, the PID is returned. Otherwise returns 0.
@@ -61,10 +61,12 @@ export function get_root(ns, target) {
  * @param {string} hostname - Hostname of server to deploy script to.
  * @param {string} target - Hack target server hostname.
  * @param {number} threads - Number of threads to use.
- * @returns {number} PID of the script.
+ * @returns {number} PID of the script if successful, 0 otherwise.
  */
 export function deploy_hack(ns, script, hostname, target, threads) {
   const libs = ['lib/server.js', 'lib/port.js', 'lib/hacking.js'];
+
+  if (!get_root(ns, hostname)) return 0; // Attempt to open ports and gain root access.
 
   ns.scp([script, ...libs], hostname);
   const pid = ns.exec(script, hostname, threads, target);
