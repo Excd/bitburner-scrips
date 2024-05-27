@@ -26,6 +26,29 @@ export function open_ports(ns, target) {
 }
 
 /**
+ * Attempt to open ports and gain root access on the target server.
+ * @remarks
+ * RAM cost: 0.4 GB
+ *
+ * Port and nuke programs must exist in the home directory.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} target - Target server hostname.
+ * @returns {boolean} True if successful, false otherwise.
+ */
+export function get_root(ns, target) {
+  open_ports(ns, target);
+  try {
+    ns.nuke(target);
+  } catch (e) {
+    ns.tprint(`ERROR! Unable to gain root access on ${target}.\n${e}\n\n`);
+    return false;
+  }
+  ns.tprint(`INFO: Gained root access on ${target}.`);
+  return true;
+}
+
+/**
  * Deploy a hack script to the target server.
  * @remarks
  * RAM cost: 1.9 GB
