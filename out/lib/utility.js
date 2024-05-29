@@ -6,7 +6,7 @@ export const PREFIX = {
 };
 
 /**
- * Print message to console.
+ * Print message to terminal.
  * @remarks
  * RAM cost: 0.0 GB
  *
