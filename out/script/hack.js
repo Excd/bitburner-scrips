@@ -26,21 +26,14 @@ export async function main(ns) {
 
   // Arguments.
   let target = ns.args[0];
+  // Constants.
   const portNumber = 1;
 
   // Attempt to open ports and gain root access.
   if (target) {
     if (!get_root(ns, target)) return;
   } else {
-    // Automatically determine target.
-    target = get_target(ns);
-    if (!get_root(ns, target)) {
-      // If unable to get root, clear port array and try again.
-      print(ns, 'Trying again...');
-      clear_port_array(ns, portNumber);
-      target = get_target(ns);
-      if (!get_root(ns, target)) return;
-    }
+    target = getTarget(ns, portNumber);
   }
 
   // Push target to port array and register atExit handler.
@@ -51,7 +44,18 @@ export async function main(ns) {
     print(ns, `Hack script targeting ${target} terminated.`);
   });
 
-  // Thresholds.
+  await hack(ns, target);
+}
+
+/**
+ * Hack target server.
+ * @remarks
+ * RAM cost: 0.8 GB
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {string} target - Target server hostname.
+ */
+async function hack(ns, target) {
   const moneyThreshold = ns.getServerMaxMoney(target) * 0.75;
   const securityThreshold = ns.getServerMinSecurityLevel(target) + 5;
 
@@ -61,4 +65,31 @@ export async function main(ns) {
     else if (ns.getServerMoneyAvailable(target) < moneyThreshold) await ns.grow(target);
     else await ns.hack(target);
   }
+}
+
+/**
+ * Automatically determine target server.
+ * @remarks
+ * RAM cost: 0.85 GB
+ *
+ * Attempts to gain root access on target server.
+ * Tries another target if unsuccessful.
+ *
+ * @param {import('@ns').NS} ns - Netscript environment.
+ * @param {number} portNumber - Port number.
+ * @returns {string} Target server hostname.
+ */
+function getTarget(ns, portNumber) {
+  let target = get_target(ns);
+
+  // Attempt to gain root access.
+  if (!get_root(ns, target)) {
+    // If unable to get root, clear port array and try again.
+    print(ns, 'Trying again...');
+    clear_port_array(ns, portNumber);
+    target = get_target(ns);
+    if (!get_root(ns, target)) ns.exit();
+  }
+
+  return target;
 }
