@@ -1,3 +1,4 @@
+import { print } from 'lib/utility';
 import { get_lore, get_servers } from 'lib/server';
 
 /**
@@ -17,8 +18,9 @@ export async function main(ns) {
   ]);
 
   if (flags.help) {
-    ns.tprint(
-      'INFO: Copy lore from all servers. Excludes purchased servers by default.' +
+    print(
+      ns,
+      'Copy lore from all servers. Excludes purchased servers by default.' +
         ' Optionally exclude servers with a specified term instead.' +
         `\n[Usage   /]> run ${ns.getScriptName()} <--term term>` +
         `\n[Example /]> run ${ns.getScriptName()} --term my-term`

@@ -1,3 +1,4 @@
+import { PREFIX, print } from 'lib/utility';
 import { get_purchased_servers, buy_server, max_threads } from 'lib/server';
 import { deploy_hack } from 'lib/hacking';
 
@@ -18,8 +19,9 @@ export async function main(ns) {
   ]);
 
   if (flags.help) {
-    ns.tprint(
-      'INFO: Purchases servers automatically with the specified amount of RAM (in gigabytes).' +
+    print(
+      ns,
+      'Purchases servers automatically with the specified amount of RAM (in gigabytes).' +
         ' Optionally executes a hack script with maximum possible threads. Target hostname' +
         ' determined automatically if not specified.' +
         `\n[Usage   /]> run ${ns.getScriptName()} {ram} <--deploy> <hostname>` +
@@ -48,7 +50,7 @@ export async function main(ns) {
         if (flags.deploy)
           deploy_hack(ns, script, hostname, target, max_threads(ram, ns.getScriptRam(script)));
       } catch (e) {
-        ns.tprint(`ERROR! Script terminated prematurely.\n${e}`);
+        print(ns, `Script terminated prematurely.\n${e}`, PREFIX.ERROR);
         return;
       }
 
@@ -58,5 +60,5 @@ export async function main(ns) {
     }
   }
 
-  ns.tprint(`INFO: Server limit reached (${limit}). Script terminated.`);
+  print(ns, `Server limit reached (${limit}). Script terminated.`);
 }

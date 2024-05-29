@@ -1,3 +1,4 @@
+import { PREFIX, print } from 'lib/utility';
 import {
   get_purchased_servers,
   upgrade_server,
@@ -25,8 +26,9 @@ export function main(ns) {
   ]);
 
   if (flags.help) {
-    ns.tprint(
-      'INFO: Upgrades all purchased servers to the specified RAM (in gigabytes).' +
+    print(
+      ns,
+      'Upgrades all purchased servers to the specified RAM (in gigabytes).' +
         ' Optionally kills all running scripts. Also optionally executes a hack script with' +
         ' maximum possible threads. Target hostname determined automatically if not specified.' +
         `\n[Usage   /]> run ${ns.getScriptName()} {ram} <-k> <--deploy> <hostname>` +
@@ -63,7 +65,7 @@ export function main(ns) {
           max_threads(flags.k ? ram : ram - oldRam, ns.getScriptRam(script))
         );
     } else {
-      ns.tprint(`ERROR! Insufficient funds to upgrade ${server}. \$${price} required.`);
+      print(ns, `Insufficient funds to upgrade ${server}. \$${price} required.`, PREFIX.ERROR);
     }
   });
 }

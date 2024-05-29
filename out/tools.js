@@ -1,3 +1,4 @@
+import { PREFIX, print } from 'lib/utility';
 import * as server from 'lib/server';
 import * as port from 'lib/port';
 import * as hacking from 'lib/hacking';
@@ -5,7 +6,7 @@ import * as hacking from 'lib/hacking';
 /**
  * Interpret arguments as library function calls.
  * @remarks
- * RAM cost: 10.05 GB
+ * RAM cost: 10.1 GB
  *
  * Library name flag is required. Function names are not case sensitive.
  *
@@ -20,8 +21,9 @@ export function main(ns) {
   ]);
 
   if (flags.help) {
-    ns.tprint(
-      'INFO: Allows terminal usage of library functions via arguments. Library name flag' +
+    print(
+      ns,
+      'Allows terminal usage of library functions via arguments. Library name flag' +
         ' is required. Function names are not case sensitive. Requires a lot of RAM.' +
         `\n[Usage   /]> run ${ns.getScriptName()} {--library command} <arg1 arg2...>` +
         `\n[Example /]> run ${ns.getScriptName()} --server get_servers home 2`
@@ -38,12 +40,12 @@ export function main(ns) {
   try {
     result = resolveCommand(ns, flags, ...args);
   } catch (e) {
-    ns.tprint(`ERROR! Unable to run command: ${command}\n${e}`);
+    print(ns, `Unable to run command: ${command}\n${e}`, PREFIX.ERROR);
     return;
   }
 
   // Print formatted result.
-  ns.tprint(`INFO: ${Array.isArray(result) ? `\n${result.join('\n')}` : result}`);
+  print(ns, `${Array.isArray(result) ? `\n${result.join('\n')}` : result}`);
 }
 
 /**

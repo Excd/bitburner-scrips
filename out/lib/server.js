@@ -1,3 +1,5 @@
+import { PREFIX, print } from 'lib/utility';
+
 /**
  * Return an array of all nearby servers.
  * @remarks
@@ -60,11 +62,9 @@ export function get_purchased_servers(ns, term = 'pserv') {
  */
 export function buy_server(ns, name, ram) {
   const hostname = ns.purchaseServer(name, ram);
-  ns.tprint(
-    hostname
-      ? `SUCCESS! ${hostname} purchased for \$${ns.getPurchasedServerCost(ram)}.`
-      : `ERROR! ${name} could not be purchased.`
-  );
+  if (hostname)
+    print(ns, `${hostname} purchased for \$${ns.getPurchasedServerCost(ram)}.`, PREFIX.SUCCESS);
+  else print(ns, `${name} could not be purchased.`, PREFIX.ERROR);
   return hostname;
 }
 
@@ -79,7 +79,8 @@ export function buy_server(ns, name, ram) {
  */
 export function delete_server(ns, hostname) {
   const result = ns.deleteServer(hostname);
-  ns.tprint(result ? `SUCCESS! ${hostname} deleted.` : `ERROR! ${hostname} could not be deleted.`);
+  if (result) print(ns, `${hostname} deleted.`, PREFIX.SUCCESS);
+  else print(ns, `${hostname} could not be deleted.`, PREFIX.ERROR);
   return result;
 }
 
@@ -94,11 +95,9 @@ export function delete_server(ns, hostname) {
  * @returns {string} New hostname.
  */
 export function rename_server(ns, hostname, newName) {
-  ns.tprint(
-    ns.renamePurchasedServer(hostname, newName)
-      ? `SUCCESS! ${hostname} renamed to ${newName}.`
-      : `ERROR! ${hostname} could not be renamed.`
-  );
+  if (ns.renamePurchasedServer(hostname, newName))
+    print(ns, `${hostname} renamed to ${newName}.`, PREFIX.SUCCESS);
+  else print(ns, `${hostname} could not be renamed.`, PREFIX.ERROR);
   return newName;
 }
 
@@ -116,13 +115,15 @@ export function upgrade_server(ns, hostname, ram) {
   const oldRam = ns.getServerMaxRam(hostname);
   const result = ns.upgradePurchasedServer(hostname, ram);
 
-  ns.tprint(
-    result
-      ? `SUCCESS! ${hostname} upgraded to ${ram}GB RAM for \$${
-          ns.getPurchasedServerCost(ram) - ns.getPurchasedServerCost(oldRam)
-        }.`
-      : `ERROR! ${hostname} could not be upgraded.`
-  );
+  if (result)
+    print(
+      ns,
+      `${hostname} upgraded to ${ram}GB RAM for \$${
+        ns.getPurchasedServerCost(ram) - ns.getPurchasedServerCost(oldRam)
+      }.`,
+      PREFIX.SUCCESS
+    );
+  else print(ns, `${hostname} could not be upgraded.`, PREFIX.ERROR);
 
   return result;
 }
@@ -149,11 +150,8 @@ export function max_threads(available, required) {
  * @param {string} hostname - Hostname of server to kill scripts on.
  */
 export function kill_all_scripts(ns, hostname) {
-  ns.tprint(
-    ns.killall(hostname)
-      ? `SUCCESS! All scripts killed on ${hostname}.`
-      : `WARN! No scripts killed on ${hostname}.`
-  );
+  if (ns.killall(hostname)) print(ns, `All scripts killed on ${hostname}.`, PREFIX.SUCCESS);
+  else print(ns, `No scripts killed on ${hostname}.`, PREFIX.WARN);
 }
 
 /**
@@ -167,15 +165,11 @@ export function kill_all_scripts(ns, hostname) {
 export function get_lore(ns, hostname) {
   const lore = ns.ls(hostname, '.lit');
 
-  if (lore.length) {
-    lore.forEach((file) =>
-      ns.tprint(
-        ns.scp(file, 'home', hostname)
-          ? `SUCCESS! ${file} copied from ${hostname}.`
-          : `ERROR! ${file} could not be copied from ${hostname}.`
-      )
-    );
-  } else {
-    ns.tprint(`INFO: No lore found on ${hostname}.`);
-  }
+  if (lore.length)
+    lore.forEach((file) => {
+      if (ns.scp(file, 'home', hostname))
+        print(ns, `${file} copied from ${hostname}.`, PREFIX.SUCCESS);
+      else print(ns, `${file} could not be copied from ${hostname}.`, PREFIX.ERROR);
+    });
+  else print(ns, `No lore found on ${hostname}.`, PREFIX.WARN);
 }

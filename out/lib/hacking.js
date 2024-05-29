@@ -1,3 +1,4 @@
+import { PREFIX, print } from 'lib/utility';
 import { get_servers } from 'lib/server';
 import { peek_port_array, clear_port_array } from 'lib/port';
 
@@ -41,10 +42,10 @@ export function get_root(ns, target) {
   try {
     ns.nuke(target);
   } catch (e) {
-    ns.tprint(`ERROR! Unable to gain root access on ${target}.\n${e}\n\n`);
+    print(ns, `Unable to gain root access on ${target}.\n${e}\n\n`, PREFIX.ERROR);
     return false;
   }
-  ns.tprint(`INFO: Gained root access on ${target}.`);
+  print(ns, `Gained root access on ${target}.`, PREFIX.SUCCESS);
   return true;
 }
 
@@ -70,12 +71,13 @@ export function deploy_hack(ns, script, hostname, target, threads) {
 
   ns.scp([script, ...libs], hostname);
   const pid = ns.exec(script, hostname, threads, target);
-  ns.tprint(
-    pid
-      ? `SUCCESS! ${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`
-      : `ERROR! ${script} failed to execute on ${hostname}.`
-  );
-
+  if (pid)
+    print(
+      ns,
+      `${script} executed on ${hostname} with ${threads} thread(s), pid ${pid}.`,
+      PREFIX.SUCCESS
+    );
+  else print(ns, `${script} failed to execute on ${hostname}.`, PREFIX.ERROR);
   return pid;
 }
 
@@ -114,7 +116,7 @@ export function get_target(ns) {
       return hostname;
     } else {
       // If still no valid target found, terminate with error.
-      ns.tprint('ERROR! No target found.');
+      print(ns, 'No target found.', PREFIX.ERROR);
       ns.exit();
     }
   }
